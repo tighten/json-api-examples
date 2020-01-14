@@ -12,8 +12,10 @@ class ArticleController extends Controller
         return new \App\Http\Resources\ArticleCollection(\App\Article::paginate());
     }
 
-    public function show(Article $article)
+    public function show(\App\Article $article)
     {
+        $article->load(['author', 'comments']); // @todo: handle comments.author as well?
+
         return new \App\Http\Resources\Article($article);
     }
 }

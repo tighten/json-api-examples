@@ -22,7 +22,7 @@ class Article extends JsonResource
                 'created_at' => $this->created_at->format('c'),
                 'updated_at' => $this->created_at->format('c'),
             ],
-            'relationships' => [], // @todo
+            'relationships' => $this->relationships($request),
         ];
     }
 
@@ -30,4 +30,42 @@ class Article extends JsonResource
     {
         $response->header('Content-Type', 'application/vnd.api+json');
     }
+
+    protected function relationships($request)
+    {
+        // Current thinking: only put stuff in here if it's pointing to
+        // data down in the included() section ("compound document")
+        // ... if that's true, that means we don't send the author_id unless
+        // you include author. is that bad?
+
+        $return = [];
+
+        if ($this->resource->relationLoaded('author')) {
+            $return[] = [
+                'author' => [
+                    'data' => [
+                        'type' => 'users',
+                        'id' => $this->author_id,
+                    ],
+                ],
+            ];
+        }
+
+        if ($this->resource->relationLoaded('comments')) {
+            $return[] = [
+                'comments' => [
+                    'data' => $this->comments->map(function ($comment) {
+                        return [
+                            'type' => 'comments', // @todo do we store this on the Eloquent object as a const?
+                            'id' => $comment->id,
+                        ];
+                    }),
+                ],
+            ];
+        }
+
+        return $return;
+    }
+
+    // @todo add included.. but only based on the eager load
 }
