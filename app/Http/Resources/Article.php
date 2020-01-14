@@ -22,13 +22,27 @@ class Article extends JsonResource
                 'created_at' => $this->created_at->format('c'),
                 'updated_at' => $this->created_at->format('c'),
             ],
-            'relationships' => $this->relationships($request),
+            $this->mergeWhen($this->requestedIncludes($request)->isNotEmpty(), [
+                'relationships' => $this->relationships($request),
+            ]),
         ];
     }
 
     public function withResponse($request, $response)
     {
+        // @todo consider making a JsonApiResponse that these all extend (or a trait) so we don't have to duplicate this?
         $response->header('Content-Type', 'application/vnd.api+json');
+    }
+
+    public function requestedIncludes($request)
+    {
+        if (! $request->input('include')) {
+            return collect([]);
+        }
+
+        // @todo Validate includes list?
+
+        return collect(explode(',', $request->input('include')));
     }
 
     protected function relationships($request)
@@ -38,14 +52,9 @@ class Article extends JsonResource
         // ... if that's true, that means we don't send the author_id unless
         // you include author. is that bad?
 
-        if (! $request->input('include')) {
-            return [];
-        }
-
         $return = [];
-        $includes = collect(explode(',', $request->input('include')));
 
-        // @todo Validate includes list?
+        $includes = $this->requestedIncludes($request);
 
         if ($includes->contains('author')) {
             $return[] = [
@@ -76,13 +85,32 @@ class Article extends JsonResource
 
     public function with($request)
     {
-        if ($request->has('include')) {
+        $return = [];
 
+        $includes = $this->requestedIncludes($request);
+
+        if ($includes->isNotEmpty()) {
+            $included = [];
+
+            if ($includes->contains('author')) {
+                $included[] = new User($this->author);
+            }
+
+            if ($includes->contains('comments')) {
+                $included = array_merge(
+                    $included,
+                    $this->comments->map(function ($comment) {
+                        // @todo: Make sure we're figuring out how to handle
+                        // things like the include on "comments.author"
+                        return (new Comment($comment))->toArray(null);
+                    })->toArray()
+                );
+            }
+
+            $return['included'] = $included;
         }
 
-        return [
-
-        ];
+        return $return;
     }
 
     // @todo add included.. but only based on the eager load
