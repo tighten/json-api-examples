@@ -38,9 +38,16 @@ class Article extends JsonResource
         // ... if that's true, that means we don't send the author_id unless
         // you include author. is that bad?
 
-        $return = [];
+        if (! $request->input('include')) {
+            return [];
+        }
 
-        if ($this->resource->relationLoaded('author')) {
+        $return = [];
+        $includes = collect(explode(',', $request->input('include')));
+
+        // @todo Validate includes list?
+
+        if ($includes->contains('author')) {
             $return[] = [
                 'author' => [
                     'data' => [
@@ -51,7 +58,7 @@ class Article extends JsonResource
             ];
         }
 
-        if ($this->resource->relationLoaded('comments')) {
+        if ($includes->contains('comments')) {
             $return[] = [
                 'comments' => [
                     'data' => $this->comments->map(function ($comment) {
@@ -65,6 +72,17 @@ class Article extends JsonResource
         }
 
         return $return;
+    }
+
+    public function with($request)
+    {
+        if ($request->has('include')) {
+
+        }
+
+        return [
+
+        ];
     }
 
     // @todo add included.. but only based on the eager load
