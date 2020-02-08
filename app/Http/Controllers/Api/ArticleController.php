@@ -14,7 +14,7 @@ class ArticleController extends Controller
 
     public function show(\App\Article $article)
     {
-        $article->load(['author', 'comments']); // @todo: handle comments.author as well?
+        $article->load(['author', 'comments', 'comments.author']); // @todo: handle comments.author as well!
 
         return new \App\Http\Resources\Article($article);
     }
