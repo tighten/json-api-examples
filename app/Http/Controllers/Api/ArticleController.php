@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Article;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Resources\Article as ArticleResource;
+use App\Http\Resources\ArticleCollection;
 
 class ArticleController extends Controller
 {
     public function index()
     {
-        return new \App\Http\Resources\ArticleCollection(\App\Article::paginate());
+        return new ArticleCollection(Article::paginate());
     }
 
-    public function show(\App\Article $article)
+    public function show(Article $article)
     {
         $article->load(['author', 'comments', 'comments.author']); // @todo: handle comments.author as well!
 
-        return new \App\Http\Resources\Article($article);
+        return new ArticleResource($article);
     }
 }
