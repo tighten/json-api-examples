@@ -14,7 +14,8 @@ class ArticleController extends Controller
     {
         $articles = QueryBuilder::for(Article::class)
             ->allowedIncludes(['author', 'comments'])
-            ->get();
+            ->allowedSorts(['created_at', 'title'])
+            ->paginate(5);
 
         return fractal($articles, new ArticleTransformer)->respond();
     }

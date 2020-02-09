@@ -22,7 +22,8 @@ class AuthorTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        //
+        'comments',
+        'articles',
     ];
 
     /**
@@ -36,5 +37,15 @@ class AuthorTransformer extends TransformerAbstract
             'id' => (int) $user->id,
             'name' => $user->name,
         ];
+    }
+
+    public function includeComments(User $user)
+    {
+        return $this->collection($user->comments, new CommentTransformer);
+    }
+
+    public function includeArticles(User $user)
+    {
+        return $this->collection($user->articles, new ArticleTransformer);
     }
 }

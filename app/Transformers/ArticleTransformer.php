@@ -36,6 +36,7 @@ class ArticleTransformer extends TransformerAbstract
         return [
             'id' => (int) $article->id,
             'title' => $article->title,
+            'created_at' => $article->created_at->format('c'),
         ];
     }
 
