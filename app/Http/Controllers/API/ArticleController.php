@@ -19,4 +19,9 @@ class ArticleController extends Controller
 
         return fractal($articles, new ArticleTransformer)->respond();
     }
+
+    public function show(Article $article)
+    {
+        return fractal($article, new ArticleTransformer)->respond();
+    }
 }
