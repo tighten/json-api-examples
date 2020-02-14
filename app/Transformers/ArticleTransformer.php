@@ -40,11 +40,13 @@ class ArticleTransformer extends TransformerAbstract
         ];
     }
 
+    // @todo why is this not showing up in included?
     public function includeAuthor(Article $article)
     {
         return $this->item($article->author, new AuthorTransformer);
     }
 
+    // @todo why are they not showing the right type?
     public function includeComments(Article $article)
     {
         return $this->collection($article->comments, new CommentTransformer);
