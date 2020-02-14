@@ -41,11 +41,11 @@ class AuthorTransformer extends TransformerAbstract
 
     public function includeComments(User $user)
     {
-        return $this->collection($user->comments, new CommentTransformer);
+        return $this->collection($user->comments, new CommentTransformer, 'comments');
     }
 
     public function includeArticles(User $user)
     {
-        return $this->collection($user->articles, new ArticleTransformer);
+        return $this->collection($user->articles, new ArticleTransformer, 'articles');
     }
 }

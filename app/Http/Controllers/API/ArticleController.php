@@ -22,7 +22,7 @@ class ArticleController extends Controller
                 ->paginate(5);
         });
 
-        return fractal($articles, new ArticleTransformer)->respond();
+        return fractal($articles, new ArticleTransformer)->withResourceName('articles')->respondJsonApi();
     }
 
     public function show($articleId)
@@ -40,6 +40,6 @@ class ArticleController extends Controller
             abort(404); // @todo Check this ! check, and that abort(404) is the actually correct response
         }
 
-        return fractal($article, new ArticleTransformer)->respond();
+        return fractal($article, new ArticleTransformer)->withResourceName('articles')->respond();
     }
 }
