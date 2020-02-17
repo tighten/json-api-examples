@@ -16,3 +16,14 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+JsonApi::register('default')->routes(function ($api) {
+    $api->resource('articles')->relationships(function ($relations) {
+        $relations->hasMany('comments');
+        $relations->hasOne('author');
+    });
+    $api->resource('comments')->relationships(function ($relations) {
+        $relations->hasOne('article');
+        $relations->hasOne('author');
+    });
+});
