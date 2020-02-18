@@ -55,6 +55,7 @@ return [
     'resources' => [
         'articles' => App\Article::class,
         'comments' => App\Comment::class,
+        'users' => App\User::class,
     ],
 
     /*

@@ -45,7 +45,7 @@ class Adapter extends AbstractAdapter
 
     protected function author()
     {
-        return $this->hasOne(); // @todo make this with custom field/relationship?
+        return $this->belongsTo('user');
     }
 
     protected function comments()

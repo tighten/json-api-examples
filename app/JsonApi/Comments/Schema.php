@@ -35,17 +35,24 @@ class Schema extends SchemaProvider
         ];
     }
 
-    public function getRelationships($resource, $isPrimary, array $includeRelationships)
+    public function getRelationships($resource, $isPrimary, array $includedRelationships)
     {
-        // @todo do we act on the params here?
         return [
             'article' => [
                 self::SHOW_SELF => true,
                 self::SHOW_RELATED => true,
+                self::SHOW_DATA => isset($includedRelationships['article']),
+                self::DATA => function () use ($resource) {
+                    return $resource->article;
+                },
             ],
             'author' => [
                 self::SHOW_SELF => true,
                 self::SHOW_RELATED => true,
+                self::SHOW_DATA => isset($includedRelationships['author']),
+                self::DATA => function () use ($resource) {
+                    return $resource->author;
+                },
             ],
         ];
     }

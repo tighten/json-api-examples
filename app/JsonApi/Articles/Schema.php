@@ -36,17 +36,24 @@ class Schema extends SchemaProvider
         ];
     }
 
-    public function getRelationships($resource, $isPrimary, array $includeRelationships)
+    public function getRelationships($resource, $isPrimary, array $includedRelationships)
     {
-        // @todo how do we add included?
         return [
             'author' => [
                 self::SHOW_SELF => true,
                 self::SHOW_RELATED => true,
+                self::SHOW_DATA => isset($includedRelationships['author']),
+                self::DATA => function () use ($resource) {
+                    return $resource->author;
+                },
             ],
             'comments' => [
                 self::SHOW_SELF => true,
                 self::SHOW_RELATED => true,
+                self::SHOW_DATA => isset($includedRelationships['comments']),
+                self::DATA => function () use ($resource) {
+                    return $resource->comments;
+                },
             ],
         ];
     }
