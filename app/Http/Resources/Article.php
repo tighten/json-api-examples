@@ -2,10 +2,19 @@
 
 namespace App\Http\Resources;
 
+use App\ParsesIncludes;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class Article extends JsonResource
 {
+    use ParsesIncludes;
+
+    public $allowedIncludes = [
+        'author',
+        'comments',
+        'comments.author',
+    ];
+
     /**
      * Transform the resource into an array.
      *
@@ -34,24 +43,9 @@ class Article extends JsonResource
         $response->header('Content-Type', 'application/vnd.api+json');
     }
 
-    public function requestedIncludes($request)
-    {
-        if (! $request->input('include')) {
-            return collect([]);
-        }
-
-        // @todo Validate includes list?
-
-        return collect(explode(',', $request->input('include')));
-    }
-
     protected function relationships($request)
     {
-        // Current thinking: only put stuff in here if it's pointing to
-        // data down in the included() section ("compound document")
-        // ... if that's true, that means we don't send the author_id unless
-        // you include author. is that bad?
-
+        // @todo Add all other possible relationships
         $return = [];
 
         $includes = $this->requestedIncludes($request);
@@ -70,9 +64,9 @@ class Article extends JsonResource
         if ($includes->contains('comments')) {
             $return[] = [
                 'comments' => [
-                    'data' => $this->comments->map(function ($comment) {
+                    'data' => $this->comments->map(function ($comment) use ($includes) {
                         return [
-                            'type' => 'comments', // @todo do we store this on the Eloquent object as a const?
+                            'type' => 'comments',
                             'id' => $comment->id,
                         ];
                     }),

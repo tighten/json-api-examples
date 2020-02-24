@@ -6,17 +6,26 @@ use App\Article;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Article as ArticleResource;
 use App\Http\Resources\ArticleCollection;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ArticleController extends Controller
 {
     public function index()
     {
-        return new ArticleCollection(Article::paginate());
+        $articles = QueryBuilder::for(Article::class)
+            ->allowedIncludes(['author', 'comments'])
+            ->allowedSorts(['created_at', 'title'])
+            ->paginate();
+
+        return new ArticleCollection($articles);
     }
 
-    public function show(Article $article)
+    public function show($articleId)
     {
-        $article->load(['author', 'comments', 'comments.author']); // @todo: handle comments.author as well!
+        $article = QueryBuilder::for(Article::class)
+            ->allowedIncludes(['author', 'comments'])
+            ->allowedSorts(['created_at', 'title'])
+            ->findOrFail($articleId);
 
         return new ArticleResource($article);
     }
