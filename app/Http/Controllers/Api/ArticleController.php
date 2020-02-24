@@ -13,7 +13,7 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = QueryBuilder::for(Article::class)
-            ->allowedIncludes(['author', 'comments'])
+            ->allowedIncludes(['author', 'comments', 'comments.author'])
             ->allowedSorts(['created_at', 'title'])
             ->paginate();
 
@@ -23,7 +23,7 @@ class ArticleController extends Controller
     public function show($articleId)
     {
         $article = QueryBuilder::for(Article::class)
-            ->allowedIncludes(['author', 'comments'])
+            ->allowedIncludes(['author', 'comments', 'comments.author'])
             ->allowedSorts(['created_at', 'title'])
             ->findOrFail($articleId);
 

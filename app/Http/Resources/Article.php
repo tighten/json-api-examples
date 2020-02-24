@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\ParsesIncludes;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class Article extends JsonResource
@@ -45,7 +46,6 @@ class Article extends JsonResource
 
     protected function relationships($request)
     {
-        // @todo Add all other possible relationships
         $return = [];
 
         $includes = $this->requestedIncludes($request);
@@ -79,33 +79,43 @@ class Article extends JsonResource
 
     public function with($request)
     {
-        $return = [];
-
         $includes = $this->requestedIncludes($request);
 
-        if ($includes->isNotEmpty()) {
-            $included = [];
-
-            if ($includes->contains('author')) {
-                $included[] = new User($this->author);
-            }
-
-            if ($includes->contains('comments')) {
-                $included = array_merge(
-                    $included,
-                    $this->comments->map(function ($comment) {
-                        // @todo: Make sure we're figuring out how to handle
-                        // things like the include on "comments.author"
-                        return (new Comment($comment))->toArray(null);
-                    })->toArray()
-                );
-            }
-
-            $return['included'] = $included;
+        if ($includes->isEmpty()) {
+            return [];
         }
 
-        return $return;
-    }
+        $included = [];
 
-    // @todo add included.. but only based on the eager load
+        if ($includes->contains('author')) {
+            $included[] = new User($this->author);
+        }
+
+        // @todo: It looks like mergeWhen probably sets a key of 0,
+        //        and then something later in the Laravel stack clears
+        //        it out. We need to do that in these mapped usages of
+        //        resources, sadly.
+
+        // @todo: If we include comments.author, this needs a relationship section...
+        // how do we pass a request that triggers it?
+        if ($includes->contains('comments')) {
+            $included = array_merge(
+                $included,
+                $this->comments->map(function ($comment) {
+                    return (new Comment($comment))->toArray(new Request);
+                })->toArray()
+            );
+        }
+
+        if ($includes->contains('comments.author')) {
+            $included = array_merge(
+                $included,
+                $this->comments->map(function ($comment) {
+                    return (new User($comment->author))->toArray(new Request);
+                })->toArray()
+            );
+        }
+
+        return ['included' => $included];
+    }
 }

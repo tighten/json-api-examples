@@ -38,6 +38,22 @@ class ArticleCollection extends ResourceCollection
 
     public function included($request)
     {
-        return []; // @todo
+        $includes = $this->requestedIncludes($request);
+
+        if ($includes->isEmpty()) {
+            return [];
+        }
+
+        $included = [];
+
+        if ($includes->contains('author')) {
+            // @todo all authors, not just one.
+            $included[] = new User($this->author);
+        }
+
+        // @todo flat map comments across all
+
+        // @todo flat map comment authors, AND de-duplicate against article authors
+        return ['@todo'];
     }
 }
