@@ -4,27 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Comment;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Comment as CommentResource;
 use App\Http\Resources\CommentCollection;
 use Spatie\QueryBuilder\QueryBuilder;
 
-class CommentController extends Controller
+class ArticleCommentController extends Controller
 {
-    public function index()
+    public function index($articleId)
     {
         $comments = QueryBuilder::for(Comment::class)
+            ->where('article_id', $articleId)
             ->allowedIncludes(['author', 'article'])
             ->paginate();
 
         return new CommentCollection($comments);
-    }
-
-    public function show($commentId)
-    {
-        $comment = QueryBuilder::for(Comment::class)
-            ->allowedIncludes(['author', 'article'])
-            ->findOrFail($commentId);
-
-        return new CommentResource($comment);
     }
 }

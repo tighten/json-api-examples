@@ -19,5 +19,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('articles/{article}', 'Api\ArticleController@show');
 Route::get('articles', 'Api\ArticleController@index');
-Route::get('comments/{comment}', 'Api\CommentController@show');
-Route::get('comments', 'Api\CommentController@index');
+Route::get('articles/{article}/comments', 'Api\ArticleCommentController@index');
