@@ -27,7 +27,6 @@ class AppServiceProvider extends ServiceProvider
         Fractal::macro('respondJsonApi', function ($statusCode = 200) {
             return $this->respond($statusCode, [
                 'Content-Type' => 'application/vnd.api+json',
-                'another-header' => 'another value',
             ]);
         });
     }
