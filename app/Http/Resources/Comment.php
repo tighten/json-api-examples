@@ -3,11 +3,17 @@
 namespace App\Http\Resources;
 
 use App\ParsesIncludes;
+use App\ReturnsJsonApi;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class Comment extends JsonResource
 {
-    use ParsesIncludes;
+    use ParsesIncludes, ReturnsJsonApi;
+
+    public $allowedIncludes = [
+        'author',
+        'article',
+    ];
 
     /**
      * Transform the resource into an array.
@@ -43,6 +49,17 @@ class Comment extends JsonResource
                     'data' => [
                         'type' => 'users',
                         'id' => $this->author_id,
+                    ],
+                ],
+            ];
+        }
+
+        if ($includes->contains('article')) {
+            $return[] = [
+                'article' => [
+                    'data' => [
+                        'type' => 'articles',
+                        'id' => $this->article_id,
                     ],
                 ],
             ];

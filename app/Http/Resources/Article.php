@@ -3,12 +3,13 @@
 namespace App\Http\Resources;
 
 use App\ParsesIncludes;
+use App\ReturnsJsonApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class Article extends JsonResource
 {
-    use ParsesIncludes;
+    use ParsesIncludes, ReturnsJsonApi;
 
     public $allowedIncludes = [
         'author',
@@ -29,6 +30,7 @@ class Article extends JsonResource
             'id' => $this->id,
             'attributes' => [
                 'title' => $this->title,
+                'body' => $this->body,
                 'created_at' => $this->created_at->format('c'),
                 'updated_at' => $this->created_at->format('c'),
             ],
@@ -36,12 +38,6 @@ class Article extends JsonResource
                 'relationships' => $this->relationships($request),
             ]),
         ];
-    }
-
-    public function withResponse($request, $response)
-    {
-        // @todo consider making a JsonApiResponse that these all extend (or a trait) so we don't have to duplicate this?
-        $response->header('Content-Type', 'application/vnd.api+json');
     }
 
     protected function relationships($request)

@@ -6,14 +6,13 @@ use App\ParsesIncludes;
 use App\ReturnsJsonApi;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class ArticleCollection extends ResourceCollection
+class CommentCollection extends ResourceCollection
 {
     use ParsesIncludes, ReturnsJsonApi;
 
     public $allowedIncludes = [
         'author',
-        'comments',
-        'comments.author',
+        'article',
     ];
 
     /**
@@ -47,9 +46,11 @@ class ArticleCollection extends ResourceCollection
             // $included[] = new User($this->author);
         }
 
-        // @todo flat map comments across all
+        if ($includes->contains('article')) {
+            // @todo all articles, not just one.
+            // $included[] = new Article($this->article);
+        }
 
-        // @todo flat map comment authors, AND de-duplicate against article authors
         return ['@todo'];
     }
 }
